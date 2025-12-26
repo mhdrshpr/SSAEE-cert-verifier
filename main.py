@@ -7,16 +7,12 @@ import os
 
 app = FastAPI(title="Certificate Verification API")
 
-# ================== SheetBest Config ==================
-
 SHEETBEST_API_URL = os.getenv(
     "SHEETBEST_API_URL",
-    "https://sheet.best/api/sheets/YOUR_SHEET_ID" 
+    "https://sheet.best/api/sheets/YOUR_SHEET_ID"
 )
 
-REQUEST_TIMEOUT = 10  # seconds
-
-# ================== Helpers ==================
+REQUEST_TIMEOUT = 10
 
 def parse_date(date_str: str):
     if not date_str:
@@ -38,8 +34,6 @@ def fetch_certificates():
         return response.json()
     except Exception:
         return None
-
-# ================== API ==================
 
 @app.get("/api/check")
 def check_certificate(certification_code: str = Query(..., min_length=3)):
@@ -71,7 +65,6 @@ def check_certificate(certification_code: str = Query(..., min_length=3)):
         "message": "Certificate not found"
     }
 
-# ================== Static Files ==================
 if os.path.exists("static"):
     app.mount("/static", StaticFiles(directory="static"), name="static")
 
