@@ -66,16 +66,17 @@ def check_certificate(
 
             status = check_expiration(row.get("ExpDate"))
 
-            return {
-                "found": True,
-                "certificationCode": row.get("CertificationCode"),
-                "nameFa": f"{row.get('FirstNameFa', '')} {row.get('LastNameFa', '')}",
-                "nameEn": f"{row.get('FirstNameEn', '')} {row.get('LastNameEn', '')}",
-                "course": row.get("Course"),
-                "dateOfIssue": row.get("DateOfIssue"),
-                "expirationDate": row.get("ExpDate"),
-                "status": status
-            }
+    return {
+        "found": True,
+        "certificationCode": row.get("CertificationCode"),
+        "nameFa": f"{row.get('FirstNameFa', '')} {row.get('LastNameFa', '')}",
+        "nameEn": f"{row.get('FirstNameEn', '')} {row.get('LastNameEn', '')}",
+        "course": row.get("Course"),
+        "dateOfIssue": row.get("DateOfIssue"),
+        "expirationDate": row.get("ExpDate")
+   }
+
+
 
     return {
         "found": False,
