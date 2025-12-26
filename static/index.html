@@ -2,9 +2,62 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>Mini App</title>
+<title>استعلام گواهینامه</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+body {
+    font-family: sans-serif;
+    direction: rtl;
+    padding: 20px;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+.result {
+    margin-top: 15px;
+    white-space: pre-line;
+}
+</style>
 </head>
 <body>
-<h3>Mini App آماده است ✅</h3>
+
+<h3>استعلام اصالت گواهینامه</h3>
+
+<input id="cert" placeholder="شماره گواهینامه">
+<button onclick="checkCert()">استعلام</button>
+
+<div id="result" class="result"></div>
+
+<script>
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+function checkCert() {
+    const code = document.getElementById("cert").value.trim();
+    if (!code) return;
+
+    fetch(`/api/check?certification_code=${code}`)
+        .then(r => r.json())
+        .then(data => {
+            const el = document.getElementById("result");
+            if (data.found) {
+                el.innerText =
+                    `✅ معتبر\n` +
+                    `نام: ${data.nameFa}\n` +
+                    `دوره: ${data.course}\n` +
+                    `وضعیت: ${data.status}`;
+            } else {
+                el.innerText = "❌ گواهینامه‌ای با این شماره یافت نشد";
+            }
+        })
+        .catch(() => {
+            document.getElementById("result").innerText =
+                "⚠️ خطا در ارتباط با سرور";
+        });
+}
+</script>
+
 </body>
 </html>
