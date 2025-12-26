@@ -1,63 +1,52 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-<meta charset="UTF-8">
-<title>استعلام گواهینامه</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-body {
-    font-family: sans-serif;
-    direction: rtl;
-    padding: 20px;
-}
-input, button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-}
-.result {
-    margin-top: 15px;
-    white-space: pre-line;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>Certificate Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<h3>استعلام اصالت گواهینامه</h3>
+  <!-- Header -->
+  <header>
+    <img src="logo.png" alt="Logo" class="logo" />
+    <h1>Certificate Verification</h1>
+  </header>
 
-<input id="cert" placeholder="شماره گواهینامه">
-<button onclick="checkCert()">استعلام</button>
+  <!-- Main -->
+  <main>
+    <input
+      type="text"
+      id="certInput"
+      placeholder="شماره گواهینامه را وارد کنید"
+    />
 
-<div id="result" class="result"></div>
+    <button onclick="checkCert()">بررسی اصالت</button>
 
-<script>
-const tg = window.Telegram.WebApp;
-tg.expand();
+    <!-- Loading -->
+    <div id="loading" class="loader hidden"></div>
 
-function checkCert() {
-    const code = document.getElementById("cert").value.trim();
-    if (!code) return;
+    <!-- Result -->
+    <div id="result"></div>
+  </main>
 
-    fetch(`/api/check?certification_code=${code}`)
-        .then(r => r.json())
-        .then(data => {
-            const el = document.getElementById("result");
-            if (data.found) {
-                el.innerText =
-                    `✅ معتبر\n` +
-                    `نام: ${data.nameFa}\n` +
-                    `دوره: ${data.course}\n` +
-                    `وضعیت: ${data.status}`;
-            } else {
-                el.innerText = "❌ گواهینامه‌ای با این شماره یافت نشد";
-            }
-        })
-        .catch(() => {
-            document.getElementById("result").innerText =
-                "⚠️ خطا در ارتباط با سرور";
-        });
-}
-</script>
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Your Organization Name</p>
 
+    <div class="socials">
+      <a href="https://t.me/srbiausaee" target="_blank">Telegram</a>
+      <a href="https://instagram.com/srbiaussaee" target="_blank">Instagram</a>
+      <a href="https://linkedin.com/company/yourpage" target="_blank">LinkedIn</a>
+    </div>
+
+    <button class="support-btn" onclick="openSupport()">
+      ارتباط با پشتیبانی
+    </button>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
