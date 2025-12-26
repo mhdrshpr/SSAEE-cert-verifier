@@ -5,6 +5,8 @@ from fastapi.staticfiles import StaticFiles
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
+import requests SHEETBEST_URL = https://api.sheetbest.com/sheets/d94dd875-2586-459c-8d6a-52a641569019
+
 
 app = FastAPI(title="Certificate Verification API")
 
@@ -15,15 +17,6 @@ scope = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
-
-creds = Credentials.from_service_account_file(
-    "credentials.json",
-    scopes=scope
-)
-
-client = gspread.authorize(creds)
-sheet = client.open(SHEET_NAME).sheet1
-
 
 # ---------- Helpers ----------
 def parse_date(date_str):
