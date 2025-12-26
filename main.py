@@ -11,8 +11,7 @@ app = FastAPI(title="Certificate Verification API")
 
 SHEETBEST_API_URL = os.getenv(
     "SHEETBEST_API_URL",
-    "https://api.sheetbest.com/sheets/d94dd875-2586-459c-8d6a-52a641569019
-"
+    "https://sheet.best/api/sheets/YOUR_SHEET_ID"
 )
 
 REQUEST_TIMEOUT = 10  # seconds
