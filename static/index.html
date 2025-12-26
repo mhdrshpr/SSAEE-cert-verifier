@@ -1,53 +1,362 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Certificate Verification</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <link rel="stylesheet" href="style.css">
-  <script src="app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, user-scalable=no">
+    <title>استعلام گواهینامه</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/misc/Farsi-Digits/font-face.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body {
+            background-color: #000;
+            font-family: 'Vazirmatn', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            width: 1080px;
+            min-height: 1920px;
+            background-color: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 400px;
+        }
+        .header-text { padding-right: 80px; margin-top: 50px; }
+        .header-text img { max-width: 500px; height: auto; }
+        .logo-container {
+            background-color: #1a2e5a;
+            width: 450px;
+            height: 380px;
+            border-bottom-left-radius: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 30px;
+            padding-right: 30px;
+        }
+        .logo-container img { width: 280px; height: auto; }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            position: relative;
+        }
+
+        h1, h2 {
+            color: #ffc845;
+            font-size: 65px;
+            margin-bottom: 60px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        #search-view {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 100px;
+            transition: opacity 0.5s;
+        }
+
+        .input-group { width: 80%; margin-bottom: 50px; }
+        input[type="text"] {
+            width: 100%;
+            background-color: #1a1a1a;
+            border: 3px solid #665c36;
+            border-radius: 80px;
+            padding: 40px 50px;
+            font-size: 45px;
+            color: #fff;
+            text-align: center;
+            transition: 0.3s;
+        }
+        input[type="text"]:focus { border-color: #ffc845; }
+        input::placeholder { color: #ffc845; opacity: 0.7; }
+
+        .btn-yellow {
+            background-color: #ffc845;
+            color: #000;
+            border: none;
+            border-radius: 80px;
+            padding: 30px 100px;
+            font-size: 50px;
+            font-weight: 800;
+            font-family: 'Vazirmatn', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(255, 200, 69, 0.2);
+        }
+        .btn-yellow i { font-size: 55px; }
+
+        #result-view {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            width: 85%;
+            border: 3px solid #333;
+            border-radius: 60px;
+            padding: 100px 60px 60px 60px; 
+            position: relative;
+            background-color: #000;
+            margin-bottom: 60px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: -50px; 
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 25px 120px;
+            border-radius: 60px;
+            font-size: 50px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .status-valid { background-color: #107c41; }
+        .status-invalid { background-color: #c5221f; } 
+        .status-expired { background-color: #5f6368; } 
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            font-size: 45px;
+        }
+        .info-label { color: #fff; font-weight: 700; }
+        .info-value { color: #ccc; font-weight: 400; direction: ltr; }
+
+        .btn-back {
+            padding: 25px 80px;
+            font-size: 45px;
+        }
+
+        footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .support-btn {
+            border: 3px solid #333;
+            background: transparent;
+            color: #666;
+            border-radius: 60px;
+            padding: 25px 80px;
+            font-size: 40px;
+            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-decoration: none;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .social-box {
+            background-color: #1a2e5a;
+            width: 90%;
+            border-top-left-radius: 100px;
+            border-top-right-radius: 100px;
+            padding: 60px 40px 80px 40px;
+            text-align: center;
+        }
+        .social-text { color: #fff; font-size: 40px; font-weight: 700; margin-bottom: 40px; }
+        .social-icons { display: flex; justify-content: center; gap: 60px; }
+        .social-icons a {
+            background-color: #fff; color: #1a2e5a;
+            width: 100px; height: 100px; border-radius: 25px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 50px; text-decoration: none;
+        }
+
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: none; z-index: 2000;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loading-overlay.active { display: flex; }
+        .spinner {
+            width: 120px; height: 120px;
+            border: 10px solid rgba(255, 255, 255, 0.1);
+            border-top: 10px solid #ffc845;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+        .loading-text { color: #ffc845; font-size: 40px; font-weight: bold; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <img src="logo.png" alt="Logo" class="logo" />
-    <h1>Certificate Verification</h1>
-  </header>
+    <div class="app-container">
+        
+        <header>
+            <div class="logo-container">
+                <img src="logo.png" alt="Logo">
+            </div>
+            <div class="header-text">
+                <img src="logoname.png" alt="Logoname">
+            </div>
+        </header>
 
-  <!-- Main -->
-  <main>
-    <input
-      type="text"
-      id="certInput"
-      placeholder="شماره گواهینامه را وارد کنید"
-    />
+        <main>
+            <div id="search-view">
+                <h1>استعلام گواهینامه‌ها</h1>
+                
+                <div class="input-group">
+                    <input type="text" id="certInput" placeholder="شماره گواهینامه">
+                </div>
 
-    <button onclick="checkCert()">بررسی اصالت</button>
+                <button class="btn-yellow" onclick="handleInquiry('valid')">
+                    <span>استعلام</span>
+                    <i class="fa-solid fa-check-circle" style="border: 3px solid #000; border-radius: 50%; padding: 5px;"></i>
+                </button>
+            </div>
 
-    <!-- Loading -->
-    <div id="loading" class="loader hidden"></div>
+            <div id="result-view">
+                <h2>نتیجه استعلام</h2>
 
-    <!-- Result -->
-    <div id="result"></div>
-  </main>
+                <div class="result-card">
+                    <div id="statusBadge" class="status-badge status-valid">
+                        <span id="statusText">معتبر</span>
+                        <i id="statusIcon" class="fa-solid fa-check-circle"></i>
+                    </div>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 Your Organization Name</p>
+                    <div class="info-row">
+                        <span class="info-label">شماره گواهینامه:</span>
+                        <span class="info-value">12345678910</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">نام فارسی:</span>
+                        <span class="info-value">لورم</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">نام انگلیسی:</span>
+                        <span class="info-value">Lorem</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">دوره:</span>
+                        <span class="info-value">CourseName</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">تاریخ صدور:</span>
+                        <span class="info-value">11/11/2011</span>
+                    </div>
+                </div>
 
-    <div class="socials">
-      <a href="https://t.me/srbiausaee" target="_blank">Telegram</a>
-      <a href="https://instagram.com/srbiaussaee" target="_blank">Instagram</a>
-      <a href="https://linkedin.com/company/yourpage" target="_blank">LinkedIn</a>
+                <button class="btn-yellow btn-back" onclick="goBack()">
+                    <span>بازگشت</span>
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <a href="#" class="support-btn">
+                <i class="fa-regular fa-comment-dots"></i>
+                ارتباط با پشتیبانی
+            </a>
+            <div class="social-box">
+                <div class="social-text">راه‌های ارتباط با انجمن علمی برق</div>
+                <div class="social-icons">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-telegram"></i></a>
+                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </footer>
+
+        <div class="loading-overlay" id="loadingBox">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading</div>
+        </div>
+
     </div>
 
-    <button class="support-btn" onclick="openSupport()">
-      ارتباط با پشتیبانی
-    </button>
-  </footer>
+    <script>
 
-  <script src="app.js"></script>
+        function handleInquiry(type = 'valid') {
+            const loader = document.getElementById('loadingBox');
+            loader.classList.add('active');
+
+            setTimeout(() => {
+                loader.classList.remove('active');
+                showResult(type);
+            }, 2000);
+        }
+
+        function showResult(type) {
+            document.getElementById('search-view').style.display = 'none';
+            document.getElementById('result-view').style.display = 'flex';
+
+            const badge = document.getElementById('statusBadge');
+            const text = document.getElementById('statusText');
+            const icon = document.getElementById('statusIcon');
+
+            badge.classList.remove('status-valid', 'status-invalid', 'status-expired');
+
+            if (type === 'valid') {
+                badge.classList.add('status-valid');
+                text.innerText = 'معتبر';
+                icon.className = 'fa-solid fa-check-circle';
+            } else if (type === 'invalid') {
+                badge.classList.add('status-invalid');
+                text.innerText = 'نامعتبر';
+                icon.className = 'fa-solid fa-times-circle';
+            } else { // expired
+                badge.classList.add('status-expired');
+                text.innerText = 'منقضی شده';
+                icon.className = 'fa-solid fa-clock';
+            }
+        }
+
+        function goBack() {
+            // بازگشت به حالت اول
+            document.getElementById('result-view').style.display = 'none';
+            document.getElementById('search-view').style.display = 'flex';
+            // پاک کردن ورودی
+            document.getElementById('certInput').value = '';
+        }
+    </script>
 </body>
 </html>
