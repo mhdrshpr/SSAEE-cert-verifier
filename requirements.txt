@@ -1,4 +1,3 @@
 fastapi
 uvicorn
-gspread
-google-auth
+requests
