@@ -2,20 +2,20 @@ async function handleInquiry() {
     const certInput = document.getElementById('certInput');
     const certCode = certInput.value.trim();
     
-    // اعتبارسنجی اولیه مشابه پایتون (حداقل ۳ کاراکتر)
     if (certCode.length < 3) {
         alert("لطفاً حداقل ۳ کاراکتر وارد کنید");
         return;
     }
 
     const loader = document.getElementById('loadingBox');
-    loader.style.display = 'flex'; 
+    loader.style.display = 'flex';
 
     try {
         const response = await fetch(`/api/check?certification_code=${encodeURIComponent(certCode)}`);
         
         if (!response.ok) {
-            throw new Error('خطا در پاسخگویی سرور');
+            // اگر پاسخ از سرور 5xx یا 4xx بود
+            throw new Error(`خطا در پاسخگویی سرور: ${response.status}`);
         }
 
         const data = await response.json();
@@ -26,26 +26,27 @@ async function handleInquiry() {
             showResult({ found: false, certificationCode: certCode });
         }
     } catch (error) {
-        console.error("Error:", error);
-        alert("برقراری ارتباط با سرور با خطا مواجه شد.");
+        console.error("Error details:", error);
+        alert("خطا در برقراری ارتباط با سرور. لطفا مجددا تلاش کنید.");
     } finally {
         loader.style.display = 'none';
+    }
 }
 
 function showResult(data) {
     document.getElementById('search-view').style.display = 'none';
     document.getElementById('result-view').style.display = 'flex';
 
-    const badge = document.getElementById('statusBadge');
-    const text = document.getElementById('statusText');
-    const icon = document.getElementById('statusIcon');
-    
     document.getElementById('res-code').innerText = data.certificationCode || "---";
     document.getElementById('res-fa').innerText = data.nameFa || "---";
     document.getElementById('res-en').innerText = data.nameEn || "---";
     document.getElementById('res-course').innerText = data.course || "---";
     document.getElementById('res-date').innerText = data.dateOfIssue || "---";
 
+    const badge = document.getElementById('statusBadge');
+    const text = document.getElementById('statusText');
+    const icon = document.getElementById('statusIcon');
+    
     badge.classList.remove('status-valid', 'status-invalid', 'status-expired');
 
     if (!data.found) {
@@ -53,7 +54,8 @@ function showResult(data) {
         text.innerText = 'نامعتبر';
         icon.className = 'fa-solid fa-times-circle';
     } else {
-        const status = checkDateStatus(data.expirationDate);
+        const expDateStr = data.expirationDate;
+        const status = checkDateStatus(expDateStr);
         
         if (status === 'expired') {
             badge.classList.add('status-expired');
@@ -68,11 +70,15 @@ function showResult(data) {
 }
 
 function checkDateStatus(expDateStr) {
-    if (!expDateStr) return 'unknown';
-    
+    // اگر تاریخ انقضا وجود ندارد، فرض می کنیم معتبر است (یا وضعیت نامشخص)
+    if (!expDateStr) return 'valid'; 
+
+    // تاریخ باید به فرمت YYYY-MM-DD باشد تا Date() به درستی آن را تفسیر کند
+    // جایگزینی / با -
     const expDate = new Date(expDateStr.replace(/\//g, '-'));
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0); // نادیده گرفتن زمان برای مقایسه دقیق روز
+
     return expDate < today ? 'expired' : 'valid';
 }
 
