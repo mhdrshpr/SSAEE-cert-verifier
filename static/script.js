@@ -42,6 +42,8 @@ function showResult(data) {
     document.getElementById('res-en').innerText = data.nameEn || "---";
     document.getElementById('res-course').innerText = data.course || "---";
     document.getElementById('res-date').innerText = data.dateOfIssue || "---";
+    document.getElementById('res-exp').innerText = data.expDate || "---";
+
 
     const badge = document.getElementById('statusBadge');
     const text = document.getElementById('statusText');
